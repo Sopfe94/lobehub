@@ -266,6 +266,7 @@ const styles = createStaticStyles(({ css }) => ({
 
 interface AcceptanceListPanelProps extends ReportPanelExpand {
   headerLeading?: ReactNode;
+  projectId?: string;
   /**
    * Renders the per-project action menu. Injected by the main app rather than
    * imported here: the actions open the create-project modal and navigate to
@@ -281,7 +282,7 @@ interface AcceptanceListPanelProps extends ReportPanelExpand {
  * same persisted panel-width preference so the two surfaces read as one family.
  */
 const AcceptanceListPanel = memo<AcceptanceListPanelProps>(
-  ({ expand, headerLeading, isNarrow, renderProjectActions, setExpand }) => {
+  ({ expand, headerLeading, isNarrow, projectId, renderProjectActions, setExpand }) => {
     const { t } = useTranslation('verify');
     const navigate = useNavigate();
     const { acceptanceId } = useParams<{ acceptanceId: string }>();
@@ -308,7 +309,11 @@ const AcceptanceListPanel = memo<AcceptanceListPanelProps>(
     // hands off to the flat read, which resolves every subject title across the
     // WHOLE owned set — a paged search would only ever match what had scrolled
     // in, and would report an exhausted list while the match sat on page four.
-    const search = useAcceptanceList(searching, { filter, q: debouncedQuery || undefined });
+    const search = useAcceptanceList(searching, {
+      filter,
+      projectId,
+      q: debouncedQuery || undefined,
+    });
     const {
       hasMore,
       isLoadingInitial,
@@ -316,7 +321,7 @@ const AcceptanceListPanel = memo<AcceptanceListPanelProps>(
       items: pagedItems,
       loadMore,
       ...pagedRest
-    } = useAcceptanceListInfinite(searching ? null : filter);
+    } = useAcceptanceListInfinite(searching ? null : filter, projectId);
 
     const items = searching ? (search.data ?? []) : pagedItems;
     const error = searching ? search.error : pagedRest.error;
@@ -328,6 +333,7 @@ const AcceptanceListPanel = memo<AcceptanceListPanelProps>(
     // filter is hiding anything at all (see acceptanceListEmptyVariant).
     const allProbe = useAcceptanceList(!error && !isLoading && items.length === 0, {
       filter: 'all',
+      projectId,
     });
     const emptyVariant = acceptanceListEmptyVariant({
       allListEmpty: allProbe.data ? allProbe.data.length === 0 : undefined,

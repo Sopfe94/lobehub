@@ -80,7 +80,11 @@ export const shouldShowAcceptanceOnboarding = ({
 }: AcceptanceOnboardingState) =>
   enabled && !hasDeepLink && !isLoading && !error && data?.length === 0;
 
-const AcceptanceWorkspace = memo(() => {
+interface AcceptanceWorkspaceProps {
+  projectId?: string;
+}
+
+const AcceptanceWorkspace = memo<AcceptanceWorkspaceProps>(({ projectId }) => {
   const { t } = useTranslation('verify');
   const panel = useReportPanelExpand();
   const { acceptanceId, checkId } = useParams<{ acceptanceId: string; checkId: string }>();
@@ -93,10 +97,11 @@ const AcceptanceWorkspace = memo(() => {
     isLoading,
   } = useAcceptanceList(showList, {
     filter: 'all',
+    projectId,
   });
   const isFirstUse = shouldShowAcceptanceOnboarding({
     data: allAcceptances,
-    enabled: showList,
+    enabled: showList && !projectId,
     error,
     hasDeepLink: Boolean(acceptanceId),
     isLoading,
@@ -114,7 +119,13 @@ const AcceptanceWorkspace = memo(() => {
   return (
     <Flexbox horizontal height={'100dvh'} style={{ overflow: 'hidden' }} width={'100%'}>
       <RouteMetaBridge />
-      {showList && <AcceptanceListPanel {...panel} renderProjectActions={renderProjectActions} />}
+      {showList && (
+        <AcceptanceListPanel
+          {...panel}
+          projectId={projectId}
+          renderProjectActions={renderProjectActions}
+        />
+      )}
       <div className={styles.main}>
         {showList && !panel.expand && (
           <button

@@ -179,11 +179,19 @@ export class VerifyService {
     filter?: 'active' | 'all' | 'completed';
     /** Widen the recency window (server-capped) — the merge picker asks for more. */
     limit?: number;
+    projectId?: string;
     q?: string;
     quiet?: boolean;
   }): Promise<AcceptanceListItem[]> =>
     lambdaClient.acceptance.list.query(
-      options ? { filter: options.filter, limit: options.limit, q: options.q } : undefined,
+      options
+        ? {
+            filter: options.filter,
+            limit: options.limit,
+            projectId: options.projectId,
+            q: options.q,
+          }
+        : undefined,
       options?.quiet ? { context: { showNotification: false } } : undefined,
     );
 
@@ -192,6 +200,7 @@ export class VerifyService {
     cursor?: string;
     filter?: AcceptanceListFilter;
     limit?: number;
+    projectId?: string;
   }): Promise<AcceptanceListPage> => lambdaClient.acceptance.listPage.query(params);
 
   /**

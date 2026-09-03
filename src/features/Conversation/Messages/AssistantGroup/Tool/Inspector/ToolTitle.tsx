@@ -47,11 +47,6 @@ interface ToolTitleProps {
   partialArgs?: Record<string, unknown>;
 }
 
-/**
- * Collapsed tool row title: a localized action phrase ("Run command",
- * "Edit file") plus at most one keyword of context (file basename, program,
- * query…). Full arguments stay in the expanded Detail view.
- */
 const ToolTitle = memo<ToolTitleProps>(
   ({ identifier, apiName, args, partialArgs, isLoading, isAborted }) => {
     const { t } = useTranslation('plugin');

@@ -19,6 +19,7 @@ const HeterogeneousAgentStatusGuide = memo<HeterogeneousAgentStatusGuideProps>(
     onDismiss,
     onOpenSystemTools,
     onRetry,
+    onTransfer,
     schedule,
     variant = 'inline',
   }) => {
@@ -33,6 +34,7 @@ const HeterogeneousAgentStatusGuide = memo<HeterogeneousAgentStatusGuideProps>(
       onDismiss,
       onOpenSystemTools,
       onRetry,
+      onTransfer,
       schedule,
       variant,
     };

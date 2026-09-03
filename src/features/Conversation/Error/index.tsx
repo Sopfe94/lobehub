@@ -428,6 +428,9 @@ const ErrorMessageExtra = memo<ErrorExtraProps>(
             isRateLimitError && conversationAgentId && conversationTopicId
               ? () =>
                   createTopicForwardModal({
+                    onForwardSuccess: activeTopicScheduled
+                      ? () => void cancelHeteroContinuation()
+                      : undefined,
                     sourceAgentId: conversationAgentId,
                     topicId: conversationTopicId,
                     topicTitle: conversationTopicTitle || '',

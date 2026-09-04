@@ -1,4 +1,4 @@
-const PGVECTOR_HINT = `⚠️ Database migrate failed due to \`pgvector\` extension not found. Please install the \`pgvector\` extension on your postgres instance.
+export const PGVECTOR_HINT = `⚠️ Database migrate failed due to \`pgvector\` extension not found. Please install the \`pgvector\` extension on your postgres instance.
 
 1) if you are using docker postgres image:
 you can just use \`pgvector/pgvector:pg16\` image instead of \`postgres\`, e.g:
@@ -12,7 +12,7 @@ docker run -p 5432:5432 -d --name pg -e POSTGRES_PASSWORD=mysecretpassword pgvec
 if you have any other question, please open issue here: https://github.com/lobehub/lobe-chat/issues
 `;
 
-const DB_FAIL_INIT_HINT = `------------------------------------------------------------------------------------------
+export const DB_FAIL_INIT_HINT = `------------------------------------------------------------------------------------------
 ⚠️ Database migrate failed due to not find the db instance.
 
 if you are using docker postgres image, you may need to set DATABASE_DRIVER to node
@@ -24,7 +24,7 @@ DATABASE_DRIVER=node
 if you have any other question, please open issue here: https://github.com/lobehub/lobe-chat/issues
 `;
 
-const DUPLICATE_EMAIL_HINT = `------------------------------------------------------------------------------------------
+export const DUPLICATE_EMAIL_HINT = `------------------------------------------------------------------------------------------
 ⚠️ Database migration failed due to duplicate email addresses in the users table.
 
 The database schema requires each email to be unique, but multiple users currently share the same email value.
@@ -48,9 +48,3 @@ HAVING COUNT(*) > 1;
 
 If you need further assistance, please open an issue: https://github.com/lobehub/lobe-chat/issues
 `;
-
-module.exports = {
-  DB_FAIL_INIT_HINT,
-  DUPLICATE_EMAIL_HINT,
-  PGVECTOR_HINT,
-};

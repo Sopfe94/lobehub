@@ -36,11 +36,13 @@ export const getServerDBSync = (): LobeChatDatabase => {
 };
 
 /**
- * Lazy getter for serverDB - use this instead of importing serverDB directly
- * @deprecated Use getServerDBSync() instead to be explicit about lazy initialization
+ * Lazy-initialized serverDB - uses getter to defer initialization until first access.
+ * This allows Next.js builds to succeed without KEY_VAULTS_SECRET available during build time.
+ * @deprecated Prefer getServerDBSync() for explicit lazy initialization
  */
-export const serverDB = new Proxy({} as LobeChatDatabase, {
-  get(target, prop) {
-    return getServerDBSync()[prop as keyof LobeChatDatabase];
+Object.defineProperty(module.exports, 'serverDB', {
+  get() {
+    return getServerDBSync();
   },
+  configurable: false,
 });

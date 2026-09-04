@@ -44,4 +44,13 @@ export const serverDB = new Proxy({} as LobeChatDatabase, {
   get(target, prop) {
     return getServerDBSync()[prop as keyof LobeChatDatabase];
   },
+  has(target, prop) {
+    return prop in getServerDBSync();
+  },
+  ownKeys(target) {
+    return Reflect.ownKeys(getServerDBSync());
+  },
+  getOwnPropertyDescriptor(target, prop) {
+    return Reflect.getOwnPropertyDescriptor(getServerDBSync(), prop);
+  },
 });

@@ -14,9 +14,10 @@ export const getServerDB = async (): Promise<LobeChatDatabase> => {
   try {
     // Select the appropriate database instance based on the environment
     cachedDB = getDBInstance();
+    console.log('✅ Database initialized successfully');
     return cachedDB;
   } catch (error) {
-    console.error('❌ Failed to initialize database:', error);
+    console.error('❌ Failed to initialize database:', error instanceof Error ? error.message : error);
     throw error;
   }
 };

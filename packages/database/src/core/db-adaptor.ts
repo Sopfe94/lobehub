@@ -36,13 +36,12 @@ export const getServerDBSync = (): LobeChatDatabase => {
 };
 
 /**
- * Lazy-initialized serverDB - uses getter to defer initialization until first access.
+ * Lazy getter for serverDB - uses Proxy to defer initialization until first access.
  * This allows Next.js builds to succeed without KEY_VAULTS_SECRET available during build time.
- * @deprecated Prefer getServerDBSync() for explicit lazy initialization
+ * The Proxy returns the actual database instance when accessed, ensuring compatibility with Drizzle ORM.
  */
-Object.defineProperty(module.exports, 'serverDB', {
-  get() {
-    return getServerDBSync();
+export const serverDB = new Proxy({} as LobeChatDatabase, {
+  get(target, prop) {
+    return getServerDBSync()[prop as keyof LobeChatDatabase];
   },
-  configurable: false,
 });

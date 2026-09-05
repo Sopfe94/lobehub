@@ -13,19 +13,40 @@ export const getDBInstance = (): LobeChatDatabase => {
   // In test environment, return a mock instance to avoid initialization errors
   if (process.env.NODE_ENV === 'test') return {} as LobeChatDatabase;
 
-  if (!serverDBEnv.KEY_VAULTS_SECRET) {
-    throw new Error(
-      ` \`KEY_VAULTS_SECRET\` is not set, please set it in your environment variables.
+  // Detailed logging for debugging environment variable issues
+  const missingVars: string[] = [];
 
-If you don't have it, please run \`openssl rand -base64 32\` to create one.
-`,
-    );
+  if (!serverDBEnv.KEY_VAULTS_SECRET) {
+    missingVars.push('KEY_VAULTS_SECRET');
   }
 
   const connectionString = serverDBEnv.DATABASE_URL;
-
   if (!connectionString) {
-    throw new Error(`You are try to use database, but "DATABASE_URL" is not set correctly`);
+    missingVars.push('DATABASE_URL');
+  }
+
+  if (missingVars.length > 0) {
+    const errorMessage = `
+❌ Database initialization failed!
+
+Missing environment variables: ${missingVars.join(', ')}
+
+DEBUG INFO:
+- NODE_ENV: ${process.env.NODE_ENV}
+- DATABASE_DRIVER: ${serverDBEnv.DATABASE_DRIVER || 'neon (default)'}
+- Has KEY_VAULTS_SECRET: ${!!serverDBEnv.KEY_VAULTS_SECRET}
+- Has DATABASE_URL: ${!!serverDBEnv.DATABASE_URL}
+
+HOW TO FIX:
+1. On Vercel Dashboard, go to Settings → Environment Variables
+2. Add/verify these variables are set:
+   - KEY_VAULTS_SECRET: Run 'openssl rand -base64 32' to generate if missing
+   - DATABASE_URL: Your PostgreSQL connection string
+
+3. After setting, redeploy the project
+`;
+    console.error(errorMessage);
+    throw new Error(errorMessage);
   }
 
   // When DATABASE_STATEMENT_TIMEOUT is set, Postgres aborts any statement (and any

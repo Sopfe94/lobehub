@@ -14,11 +14,44 @@ export const getServerDB = async (): Promise<LobeChatDatabase> => {
   try {
     // Select the appropriate database instance based on the environment
     cachedDB = getDBInstance();
+    console.log('✅ Database initialized successfully');
     return cachedDB;
   } catch (error) {
-    console.error('❌ Failed to initialize database:', error);
+    console.error('❌ Failed to initialize database:', error instanceof Error ? error.message : error);
     throw error;
   }
 };
 
-export const serverDB = getDBInstance();
+let serverDBInstance: LobeChatDatabase | null = null;
+
+/**
+ * Get the server database instance (lazy-initialized on first access).
+ * This avoids initializing the database at module import time, which was causing
+ * Next.js build failures when KEY_VAULTS_SECRET was not available during build.
+ */
+export const getServerDBSync = (): LobeChatDatabase => {
+  if (!serverDBInstance) {
+    serverDBInstance = getDBInstance();
+  }
+  return serverDBInstance;
+};
+
+/**
+ * Lazy getter for serverDB - uses Proxy to defer initialization until first access.
+ * This allows Next.js builds to succeed without KEY_VAULTS_SECRET available during build time.
+ * The Proxy returns the actual database instance when accessed, ensuring compatibility with Drizzle ORM.
+ */
+export const serverDB = new Proxy({} as LobeChatDatabase, {
+  get(target, prop) {
+    return getServerDBSync()[prop as keyof LobeChatDatabase];
+  },
+  has(target, prop) {
+    return prop in getServerDBSync();
+  },
+  ownKeys(target) {
+    return Reflect.ownKeys(getServerDBSync());
+  },
+  getOwnPropertyDescriptor(target, prop) {
+    return Reflect.getOwnPropertyDescriptor(getServerDBSync(), prop);
+  },
+});

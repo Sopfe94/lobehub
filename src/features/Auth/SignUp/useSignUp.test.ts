@@ -272,6 +272,22 @@ describe('useSignUp', () => {
       expect(window.location.href).toBe('');
     });
 
+    it('should show error for email not allowed on whitelist', async () => {
+      mockSignUpEmail.mockResolvedValue({
+        error: { code: 'EMAIL_NOT_ALLOWED', message: 'EMAIL_NOT_ALLOWED' },
+      });
+
+      const { result } = renderHook(() => useSignUp());
+
+      await act(async () => {
+        await result.current.onSubmit(validValues);
+      });
+
+      expect(mockMessageError).toHaveBeenCalled();
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(window.location.href).toBe('');
+    });
+
     it('should show generic error on unexpected exception', async () => {
       mockSignUpEmail.mockRejectedValue(new Error('network error'));
 

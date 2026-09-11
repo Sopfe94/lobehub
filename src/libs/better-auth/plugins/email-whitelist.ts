@@ -1,3 +1,4 @@
+import { APIError } from 'better-auth/api';
 import { type BetterAuthPlugin } from 'better-auth/types';
 
 import { authEnv } from '@/envs/auth';
@@ -47,11 +48,10 @@ export const emailWhitelist = (): BetterAuthPlugin => ({
                 if (!user.email) return { data: user };
 
                 if (!isEmailAllowed(user.email)) {
-                  const error = new Error('Email not allowed for registration') as any;
-                  error.code = 'EMAIL_NOT_ALLOWED';
-                  error.message = 'Email not allowed for registration';
-                  error.status = 403;
-                  throw error;
+                  throw new APIError('FORBIDDEN', {
+                    code: 'EMAIL_NOT_ALLOWED',
+                    message: 'Email not allowed for registration',
+                  });
                 }
 
                 return { data: user };

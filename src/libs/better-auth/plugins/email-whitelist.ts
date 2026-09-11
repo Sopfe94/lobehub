@@ -50,7 +50,7 @@ export const emailWhitelist = (): BetterAuthPlugin => ({
                 if (!isEmailAllowed(user.email)) {
                   throw new APIError('FORBIDDEN', {
                     code: 'EMAIL_NOT_ALLOWED',
-                    message: 'EMAIL_NOT_ALLOWED',
+                    message: 'Email not allowed for registration',
                   });
                 }
 

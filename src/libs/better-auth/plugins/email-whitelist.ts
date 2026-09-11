@@ -47,8 +47,9 @@ export const emailWhitelist = (): BetterAuthPlugin => ({
                 if (!user.email) return { data: user };
 
                 if (!isEmailAllowed(user.email)) {
-                  const error = new Error('EMAIL_NOT_ALLOWED') as any;
+                  const error = new Error('Email not allowed for registration') as any;
                   error.code = 'EMAIL_NOT_ALLOWED';
+                  error.message = 'Email not allowed for registration';
                   error.status = 403;
                   throw error;
                 }
